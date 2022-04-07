@@ -1,5 +1,5 @@
 {
-    "name": "nestjs-boilerplate",
+    "name": "nestjs-microservice-boilerplate",
     "version": "1.0.2",
     "description": "NestJS + mongoose",
     "author": "hydrophonixfx@gmail.com",
