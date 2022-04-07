@@ -9,6 +9,7 @@ export interface AppConfig {
     RABBITMQ_PASSWORD: string;
     RABBITMQ_HOST: string;
     RABBITMQ_PORT: string;
+    RABBITMQ_QUEUE: string;
 }
 
 export default (): AppConfig => ({
@@ -22,4 +23,5 @@ export default (): AppConfig => ({
     RABBITMQ_PASSWORD: process.env.RABBITMQ_PASSWORD,
     RABBITMQ_HOST:     process.env.RABBITMQ_HOST,
     RABBITMQ_PORT:     process.env.RABBITMQ_PORT,
+    RABBITMQ_QUEUE:    process.env.RABBITMQ_QUEUE,
 });

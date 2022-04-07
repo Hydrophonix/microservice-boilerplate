@@ -11,12 +11,13 @@ export const RabbitmqProvider: FactoryProvider = {
         const port = configService.get("RABBITMQ_PORT");
         const user = configService.get("RABBITMQ_LOGIN");
         const password = configService.get("RABBITMQ_PASSWORD");
+        const queue = configService.get("RABBITMQ_QUEUE");
 
         return ClientProxyFactory.create({
             transport: Transport.RMQ,
             options:   {
                 urls:         [ `amqp://${user}:${password}@${host}:${port}` ],
-                queue:        "userini_queue",
+                queue,
                 queueOptions: {
                     durable: true,
                 },
