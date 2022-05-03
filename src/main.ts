@@ -1,13 +1,14 @@
 // Core
-import { NestFactory }                                                from "@nestjs/core";
-import { Logger }                                                     from "@nestjs/common";
-import { FastifyAdapter, NestFastifyApplication }                     from "@nestjs/platform-fastify";
-import { ConfigService }                                              from "@nestjs/config";
-import { SwaggerModule }                                              from "@nestjs/swagger";
-import { AllExceptionsFilter, AppValidationPipe, LoggingInterceptor } from "@hydro-microservices/common";
-import fastifyCookie                                                  from "fastify-cookie";
-import fastifyHelmet                                                  from "fastify-helmet";
-import fastifyCsrf                                                    from "fastify-csrf";
+import { NestFactory }                                                        from "@nestjs/core";
+import { Logger }                                                             from "@nestjs/common";
+import { FastifyAdapter, NestFastifyApplication }                             from "@nestjs/platform-fastify";
+import { ConfigService }                                                      from "@nestjs/config";
+import { SwaggerModule }                                                      from "@nestjs/swagger";
+import { Transport }                                                          from "@nestjs/microservices";
+import { AllExceptionsFilter, AppValidationPipe, LoggingInterceptor, Queues } from "@hydro-microservices/common";
+import fastifyCookie                                                          from "fastify-cookie";
+import fastifyHelmet                                                          from "fastify-helmet";
+import fastifyCsrf                                                            from "fastify-csrf";
 
 // App
 import { AppModule } from "./app.module";
@@ -59,10 +60,27 @@ declare const module: any;
     app.useGlobalInterceptors(new LoggingInterceptor());
     app.useGlobalPipes(AppValidationPipe);
 
+    const rabbitmqUrl = configService.get("RABBITMQ_URL");
+
+
+    app.connectMicroservice({
+        transport: Transport.RMQ,
+        options:   {
+            urls:         [ rabbitmqUrl ],
+            queue:        Queues.USERS,
+            noAck:        false,
+            queueOptions: {
+                durable: true,
+            },
+        },
+    });
+
     await app.listen(
         port,
         "0.0.0.0", // for docker
     );
+    await app.startAllMicroservices();
+
 
     if (module.hot) {
         module.hot.accept();
@@ -70,5 +88,5 @@ declare const module: any;
     }
 
     Logger.log(`🚀 Nest application started on: http://localhost:${port}`, "NestFactory");
-    Logger.log(`🚀 Swagger documentation available on: http://localhost:${port}/api`, "NestFactory");
+    Logger.log("🚀 Nest microservice started", "NestFactory");
 }());
